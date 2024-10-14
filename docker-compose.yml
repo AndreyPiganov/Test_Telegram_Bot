@@ -1,0 +1,32 @@
+version: '3.9'
+services:
+    tg_bot:
+        container_name: tg_bot
+        restart: always
+        build:
+            context: ./
+            dockerfile: Dockerfile
+        depends_on:
+            - mongo
+        expose:
+            - '5015'
+        ports:
+            - '127.0.0.1:5015:5015'
+        volumes:
+            - ./:/app
+            - /app/node_modules
+        environment:
+            - TELEGRAM_TOKEN=${TELEGRAM_TOKEN}
+            - MONGO_URI=mongodb://mongo:27017/?authSource=admin&directConnection=true
+    mongo:
+      image: mongo:latest
+      container_name: mongodb
+      restart: always
+      ports:
+        - "27017:27017"
+      volumes:
+        - ./db-volumes/database/mongo:/data/db
+
+networks:
+    tg_bot_network:
+        driver: bridge
